@@ -1,0 +1,20 @@
+summarize logpergdp LLTG CBAG BDG BCBD BRA
+twoway (scatter logpergdp LLTG)
+twoway (scatter logpergdp CBAG)
+twoway (scatter logpergdp BDG)
+twoway (scatter logpergdp BCBD)
+twoway (scatter logpergdp BRA)
+xtset code year
+xtreg logpergdp LLTG CBAG BDG BCBD BRA, fe
+estimates store fixed3
+xtreg logpergdp LLTG CBAG BDG BCBD BRA, re
+estimates store random3
+hausman random3 fixed3
+xtreg logpergdp LLTG CBAG BDG BCBD BRA, fe
+xttest3
+xtserial logpergdp LLTG CBAG BDG BCBD BRA
+xtcsd, pesaran abs
+xtreg logpergdp LLTG CBAG BDG BCBD BRA, fe
+xtcsd, pesaran abs
+xtcsd, friedman
+xtscc logpergdp LLTG CBAG BDG BCBD BRA, fe

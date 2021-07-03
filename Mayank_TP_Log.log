@@ -1,0 +1,237 @@
+---------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\mukul\Desktop\stata wd\Mayank_TP_Log.log
+  log type:  text
+ opened on:  28 Nov 2020, 01:28:04
+
+. cmdlog using Mayank_TP_cmdlog
+(cmdlog C:\Users\mukul\Desktop\stata wd\Mayank_TP_cmdlog.txt opened)
+
+. summarize logpergdp LLTG CBAG BDG BCBD BRA
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   logpergdp |      1694    9.396425    1.053653   6.594027   11.46101
+        LLTG |      1694     3.89279      .69741   1.306106   5.511548
+        CBAG |      1694    .5612966      2.1105  -13.12236   4.296154
+         BDG |      1694    3.728306    .7549313   .9683935   5.478633
+        BCBD |      1694    4.558047    .4585923   2.779813   6.778602
+-------------+--------------------------------------------------------
+         BRA |      1694   -1.390942    .0849027    -1.6351   -1.18414
+
+. twoway (scatter logpergdp LLTG)
+
+. twoway (scatter logpergdp CBAG)
+
+. twoway (scatter logpergdp BDG)
+
+. twoway (scatter logpergdp BCBD)
+
+. twoway (scatter logpergdp BRA)
+
+. xtset code year
+       panel variable:  code (strongly balanced)
+        time variable:  year, 1996 to 2017
+                delta:  1 unit
+
+. xtreg logpergdp LLTG CBAG BDG BCBD BRA, fe
+
+Fixed-effects (within) regression               Number of obs      =      1694
+Group variable: code                            Number of groups   =        77
+
+R-sq:  within  = 0.6517                         Obs per group: min =        22
+       between = 0.1101                                        avg =      22.0
+       overall = 0.1254                                        max =        22
+
+                                                F(5,1612)          =    603.18
+corr(u_i, Xb)  = -0.2842                        Prob > F           =    0.0000
+
+------------------------------------------------------------------------------
+   logpergdp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+        LLTG |   .0141788   .0142655     0.99   0.320     -.013802    .0421597
+        CBAG |   .0091829   .0023023     3.99   0.000     .0046672    .0136987
+         BDG |  -.0174176   .0132495    -1.31   0.189    -.0434056    .0085705
+        BCBD |  -.0858282   .0142629    -6.02   0.000     -.113804   -.0578523
+         BRA |   7.835469   .1709335    45.84   0.000     7.500193    8.170744
+       _cons |    20.6909   .2817176    73.45   0.000     20.13833    21.24348
+-------------+----------------------------------------------------------------
+     sigma_u |  1.0264165
+     sigma_e |  .12347845
+         rho |  .98573424   (fraction of variance due to u_i)
+------------------------------------------------------------------------------
+F test that all u_i=0:     F(76, 1612) =  1333.41            Prob > F = 0.0000
+
+. estimates store fixed3
+
+. xtreg logpergdp LLTG CBAG BDG BCBD BRA, re
+
+Random-effects GLS regression                   Number of obs      =      1694
+Group variable: code                            Number of groups   =        77
+
+R-sq:  within  = 0.6517                         Obs per group: min =        22
+       between = 0.1105                                        avg =      22.0
+       overall = 0.1258                                        max =        22
+
+                                                Wald chi2(5)       =   3006.36
+corr(u_i, X)   = 0 (assumed)                    Prob > chi2        =    0.0000
+
+------------------------------------------------------------------------------
+   logpergdp |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+        LLTG |   .0154787   .0142746     1.08   0.278    -.0124991    .0434565
+        CBAG |   .0090721   .0023053     3.94   0.000     .0045538    .0135904
+         BDG |   -.015489   .0132604    -1.17   0.243    -.0414789    .0105008
+        BCBD |  -.0853267   .0142723    -5.98   0.000    -.1132999   -.0573535
+         BRA |   7.772566   .1699494    45.73   0.000     7.439471     8.10566
+       _cons |   20.58894   .3018067    68.22   0.000     19.99741    21.18047
+-------------+----------------------------------------------------------------
+     sigma_u |  .98274335
+     sigma_e |  .12347845
+         rho |  .98445827   (fraction of variance due to u_i)
+------------------------------------------------------------------------------
+
+. estimates store random3
+
+. hausman random3 fixed3
+
+                 ---- Coefficients ----
+             |      (b)          (B)            (b-B)     sqrt(diag(V_b-V_B))
+             |    random3       fixed3       Difference          S.E.
+-------------+----------------------------------------------------------------
+        LLTG |    .0154787     .0141788        .0012999         .000511
+        CBAG |    .0090721     .0091829       -.0001108        .0001176
+         BDG |    -.015489    -.0174176        .0019285        .0005373
+        BCBD |   -.0853267    -.0858282        .0005015        .0005172
+         BRA |    7.772566     7.835469        -.062903               .
+------------------------------------------------------------------------------
+                           b = consistent under Ho and Ha; obtained from xtreg
+            B = inconsistent under Ha, efficient under Ho; obtained from xtreg
+
+    Test:  Ho:  difference in coefficients not systematic
+
+                  chi2(5) = (b-B)'[(V_b-V_B)^(-1)](b-B)
+                          =      178.29
+                Prob>chi2 =      0.0000
+                (V_b-V_B is not positive definite)
+
+. xtreg logpergdp LLTG CBAG BDG BCBD BRA, fe
+
+Fixed-effects (within) regression               Number of obs      =      1694
+Group variable: code                            Number of groups   =        77
+
+R-sq:  within  = 0.6517                         Obs per group: min =        22
+       between = 0.1101                                        avg =      22.0
+       overall = 0.1254                                        max =        22
+
+                                                F(5,1612)          =    603.18
+corr(u_i, Xb)  = -0.2842                        Prob > F           =    0.0000
+
+------------------------------------------------------------------------------
+   logpergdp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+        LLTG |   .0141788   .0142655     0.99   0.320     -.013802    .0421597
+        CBAG |   .0091829   .0023023     3.99   0.000     .0046672    .0136987
+         BDG |  -.0174176   .0132495    -1.31   0.189    -.0434056    .0085705
+        BCBD |  -.0858282   .0142629    -6.02   0.000     -.113804   -.0578523
+         BRA |   7.835469   .1709335    45.84   0.000     7.500193    8.170744
+       _cons |    20.6909   .2817176    73.45   0.000     20.13833    21.24348
+-------------+----------------------------------------------------------------
+     sigma_u |  1.0264165
+     sigma_e |  .12347845
+         rho |  .98573424   (fraction of variance due to u_i)
+------------------------------------------------------------------------------
+F test that all u_i=0:     F(76, 1612) =  1333.41            Prob > F = 0.0000
+
+. xttest3
+
+Modified Wald test for groupwise heteroskedasticity
+in fixed effect regression model
+
+H0: sigma(i)^2 = sigma^2 for all i
+
+chi2 (77)  =   16854.10
+Prob>chi2 =      0.0000
+
+
+. xtserial logpergdp LLTG CBAG BDG BCBD BRA
+
+Wooldridge test for autocorrelation in panel data
+H0: no first order autocorrelation
+    F(  1,      76) =    866.011
+           Prob > F =      0.0000
+
+. xtcsd, pesaran abs
+last estimates not xtreg
+r(301);
+
+. xtreg logpergdp LLTG CBAG BDG BCBD BRA, fe
+
+Fixed-effects (within) regression               Number of obs      =      1694
+Group variable: code                            Number of groups   =        77
+
+R-sq:  within  = 0.6517                         Obs per group: min =        22
+       between = 0.1101                                        avg =      22.0
+       overall = 0.1254                                        max =        22
+
+                                                F(5,1612)          =    603.18
+corr(u_i, Xb)  = -0.2842                        Prob > F           =    0.0000
+
+------------------------------------------------------------------------------
+   logpergdp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+        LLTG |   .0141788   .0142655     0.99   0.320     -.013802    .0421597
+        CBAG |   .0091829   .0023023     3.99   0.000     .0046672    .0136987
+         BDG |  -.0174176   .0132495    -1.31   0.189    -.0434056    .0085705
+        BCBD |  -.0858282   .0142629    -6.02   0.000     -.113804   -.0578523
+         BRA |   7.835469   .1709335    45.84   0.000     7.500193    8.170744
+       _cons |    20.6909   .2817176    73.45   0.000     20.13833    21.24348
+-------------+----------------------------------------------------------------
+     sigma_u |  1.0264165
+     sigma_e |  .12347845
+         rho |  .98573424   (fraction of variance due to u_i)
+------------------------------------------------------------------------------
+F test that all u_i=0:     F(76, 1612) =  1333.41            Prob > F = 0.0000
+
+. xtcsd, pesaran abs
+ 
+ 
+Pesaran's test of cross sectional independence =    24.303, Pr = 0.0000
+ 
+Average absolute value of the off-diagonal elements =     0.499
+
+. xtcsd, friedman
+ 
+ 
+Friedman's test of cross sectional independence =   146.850, Pr = 0.0000
+
+. xtscc logpergdp LLTG CBAG BDG BCBD BRA, fe
+
+Regression with Driscoll-Kraay standard errors   Number of obs     =      1694
+Method: Fixed-effects regression                 Number of groups  =        77
+Group variable (i): code                         F(  5,    21)     =    188.69
+maximum lag: 2                                   Prob > F          =    0.0000
+                                                 within R-squared  =    0.6517
+
+------------------------------------------------------------------------------
+             |             Drisc/Kraay
+   logpergdp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+        LLTG |   .0141788   .0154889     0.92   0.370     -.018032    .0463897
+        CBAG |   .0091829   .0025719     3.57   0.002     .0038345    .0145314
+         BDG |  -.0174176   .0129707    -1.34   0.194    -.0443915    .0095564
+        BCBD |  -.0858282   .0180051    -4.77   0.000    -.1232718   -.0483845
+         BRA |   7.835469   .3664417    21.38   0.000     7.073411    8.597526
+       _cons |    20.6909   .5738259    36.06   0.000     19.49757    21.88424
+------------------------------------------------------------------------------
+
+
+. cmdlog close
+(cmdlog C:\Users\mukul\Desktop\stata wd\Mayank_TP_cmdlog.txt closed)
+
+. log close
+      name:  <unnamed>
+       log:  C:\Users\mukul\Desktop\stata wd\Mayank_TP_Log.log
+  log type:  text
+ closed on:  28 Nov 2020, 01:38:54
+---------------------------------------------------------------------------------------------------------------------------
